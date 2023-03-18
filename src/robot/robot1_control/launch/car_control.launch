@@ -1,0 +1,36 @@
+<launch>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find robot1_control)/config/car_control.yaml" command="load"/>
+
+  <!-- load the controllers -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+	output="screen" ns="/car" args="joint_state_controller
+            left_wheel_1_velocity_controller
+            left_wheel_2_velocity_controller
+            left_wheel_3_velocity_controller
+            left_wheel_4_velocity_controller
+            right_wheel_1_velocity_controller
+            right_wheel_2_velocity_controller
+            right_wheel_3_velocity_controller
+            right_wheel_4_velocity_controller
+            left_string_1_position_controller
+            left_string_2_position_controller
+            left_string_3_position_controller
+            left_string_4_position_controller
+            right_string_1_position_controller
+            right_string_2_position_controller
+            right_string_3_position_controller
+            right_string_4_position_controller"/>
+
+<!-- left_rear_joint_velocity_controller
+            right_rear_joint_velocity_controller
+            left_front_joint_velocity_controller
+            right_front_joint_velocity_controller -->
+  <!-- convert joint states to TF transforms for rviz, etc
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+    <remap from="/joint_states" to="/car/joint_states" />
+  </node> -->
+
+</launch>

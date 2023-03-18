@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<robot name="car" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:property name="m_wheel" value="10"/>
+    <xacro:property name="m_string" value="2.5"/>
+    <xacro:property name="m_car" value="200"/>
+    <xacro:property name="wheel_r" value="0.3"/>
+    <xacro:property name="wheel_h" value="0.4"/>
+    <xacro:property name="string_r" value="0.05"/>
+    <xacro:property name="car_x" value="4"/>
+    <xacro:property name="car_y" value="2"/>
+    <xacro:property name="car_z" value="0.4"/>
+    
+    <xacro:macro name="wheel_joint" params="parent child x y z">
+        <joint name="${child}_joint" type="continuous">
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <origin rpy="${PI/2}  0      0" xyz="${x} ${y} ${z}"/>
+            <axis xyz="0  0  1"/>
+            <limit effort="400" velocity="10" /> 
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="string_joint" params="parent child x y z">
+        <joint name="${child}_joint" type="revolute">
+            <parent link="${parent}"/>
+            <child link="${child}"/>
+            <origin rpy="0 0 0" xyz="${x} ${y} ${z}"/>
+            <axis xyz="0  0  1"/>
+            <limit effort="5000" lower="${-120*PI/180}" upper="${120*PI/180}" velocity="10"/>
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="wheel" params="name">
+        <link name="${name}">
+            <inertial>
+                <mass value="${m_wheel}"/>
+                <origin rpy="0  0  0" xyz="0  0  0"/>
+                <inertia    ixx="${m_wheel/12*(3*wheel_r*wheel_r+wheel_h*wheel_h)}" ixy="0" 
+                                    iyy="${m_wheel/12*(3*wheel_r*wheel_r+wheel_h*wheel_h)}" ixz="0"
+                                    izz="${m_wheel*wheel_r*wheel_r/2}"      iyz="0" />
+            </inertial>
+            <collision name="collision">
+                <origin rpy="0  0  0" xyz="0  0  0"/>
+                <geometry>
+                    <cylinder length="${wheel_h}" radius="${wheel_r}"/>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <origin rpy="0  0  0" xyz="0  0  0"/>
+                <geometry>
+                    <cylinder length="${wheel_h}" radius="${wheel_r}"/>
+                </geometry>
+            </visual>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="string" params="name">
+        <link name="${name}">
+            <inertial>
+                <mass value="${m_string}"/>
+                <origin rpy="0  0  0" xyz="0  0  0"/>
+                <inertia    ixx="${2*m_string*string_r*string_r/5}" ixy="0" 
+                                    iyy="${2*m_string*string_r*string_r/5}" ixz="0"
+                                    izz="${2*m_string*string_r*string_r/5}"  iyz="0" />
+            </inertial>
+            <collision name="collision">
+                <origin rpy="0  0  0" xyz="0  0  0"/>
+                <geometry>
+                    <sphere radius="${string_r}"/>
+                </geometry>
+            </collision>
+            <visual name="visual">
+                <origin rpy="0  0  0" xyz="0  0  0"/>
+                <geometry>
+                    <sphere radius="${string_r}"/>
+                </geometry>
+            </visual>
+        </link>
+    </xacro:macro>
+    
+    <xacro:macro name="motor" params="name ">
+        <transmission name="${name}_tran">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${name}_joint">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${name}_motor">
+                <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission>
+    </xacro:macro>
+
+    <link name="car_base">
+        <inertial>
+            <mass value="${m_car}"/>
+            <origin rpy="0  0  0" xyz="0  0  0"/>
+            <inertia    ixx="${m_car/12*(car_y*car_y+car_z*car_z)}" ixy="0" 
+                                iyy="${m_car/12*(car_x*car_x+car_z*car_z)}" ixz="0"
+                                izz="${m_car/12*(car_x*car_x+car_y*car_y)}" iyz="0" />
+        </inertial>
+        <collision name="collision">
+            <origin rpy="0  0  0" xyz="0 0 0"/>
+            <geometry>
+                <box size="${car_x} ${car_y} ${car_z}"/>
+            </geometry>
+        </collision>
+        <visual name="visual">
+            <origin rpy="0  0  0" xyz="0 0 0"/>
+            <geometry>
+                <box size="${car_x} ${car_y} ${car_z}"/>
+            </geometry>
+        </visual>
+        <depend package="tf"/>
+        <depend package="nav_msgs"/>
+    </link>
+
+    <joint name="laser_joint_1" type="fixed">
+        <parent link="car_base"/>
+        <child link="laser_1"/>
+        <origin rpy="0 0 ${PI/2}" xyz="-1.995  0.995 0.205"/>
+    </joint>
+
+    <joint name="laser_joint_2" type="fixed">
+        <parent link="car_base"/>
+        <child link="laser_2"/>
+        <origin rpy="0 0 ${PI/2}" xyz="1.995  0.995 0.205"/>
+    </joint>
+
+    <joint name="laser_joint_3" type="fixed">
+        <parent link="car_base"/>
+        <child link="laser_3"/>
+        <origin rpy="0 0 ${-PI/2}" xyz="1.995  -0.995 0.205"/>
+    </joint>
+
+    <joint name="laser_joint_4" type="fixed">
+        <parent link="car_base"/>
+        <child link="laser_4"/>
+        <origin rpy="0 0 ${-PI/2}" xyz="-1.995  -0.995 0.205"/>
+    </joint>
+
+    <xacro:wheel name="left_wheel_1"/>
+    <xacro:wheel name="left_wheel_2"/>
+    <xacro:wheel name="left_wheel_3"/>
+    <xacro:wheel name="left_wheel_4"/>
+    <xacro:wheel name="right_wheel_1"/>
+    <xacro:wheel name="right_wheel_2"/>
+    <xacro:wheel name="right_wheel_3"/>
+    <xacro:wheel name="right_wheel_4"/>
+
+    <xacro:string name="left_string_1"/>
+    <xacro:string name="left_string_2"/>
+    <xacro:string name="left_string_3"/>
+    <xacro:string name="left_string_4"/>
+    <xacro:string name="right_string_1"/>
+    <xacro:string name="right_string_2"/>
+    <xacro:string name="right_string_3"/>
+    <xacro:string name="right_string_4"/>
+
+    <xacro:string_joint parent="car_base" child="left_string_1"    x="-1.6" y="-0.5" z="-0.6"/>
+    <xacro:string_joint parent="car_base" child="left_string_2"    x="-0.6" y="-0.5" z="-0.6"/>
+    <xacro:string_joint parent="car_base" child="left_string_3"    x="0.6" y="-0.5" z="-0.6"/>
+    <xacro:string_joint parent="car_base" child="left_string_4"    x="1.6" y="-0.5" z="-0.6"/>
+    <xacro:string_joint parent="car_base" child="right_string_1" x="-1.6" y="0.5" z="-0.6"/>
+    <xacro:string_joint parent="car_base" child="right_string_2" x="-0.6" y="0.5" z="-0.6"/>
+    <xacro:string_joint parent="car_base" child="right_string_3" x="0.6" y="0.5" z="-0.6"/>
+    <xacro:string_joint parent="car_base" child="right_string_4" x="1.6" y="0.5" z="-0.6"/>
+
+    <xacro:wheel_joint parent="left_string_1" child="left_wheel_1"  x="0" y="0" z="0"/>
+    <xacro:wheel_joint parent="left_string_2" child="left_wheel_2"  x="0" y="0" z="0"/>
+    <xacro:wheel_joint parent="left_string_3" child="left_wheel_3"  x="0" y="0" z="0"/>
+    <xacro:wheel_joint parent="left_string_4" child="left_wheel_4"  x="0" y="0" z="0"/>
+    <xacro:wheel_joint parent="right_string_1" child="right_wheel_1"  x="0" y="0" z="0"/>
+    <xacro:wheel_joint parent="right_string_2" child="right_wheel_2"  x="0" y="0" z="0"/>
+    <xacro:wheel_joint parent="right_string_3" child="right_wheel_3"  x="0" y="0" z="0"/>
+    <xacro:wheel_joint parent="right_string_4" child="right_wheel_4"  x="0" y="0" z="0"/>
+
+    <xacro:motor name="left_string_1"/>
+    <xacro:motor name="left_string_2"/>
+    <xacro:motor name="left_string_3"/>
+    <xacro:motor name="left_string_4"/>
+    <xacro:motor name="right_string_1"/>
+    <xacro:motor name="right_string_2"/>
+    <xacro:motor name="right_string_3"/>
+    <xacro:motor name="right_string_4"/>
+
+    <xacro:motor name="left_wheel_1"/>
+    <xacro:motor name="left_wheel_2"/>
+    <xacro:motor name="left_wheel_3"/>
+    <xacro:motor name="left_wheel_4"/> 
+    <xacro:motor name="right_wheel_1"/>
+    <xacro:motor name="right_wheel_2"/>
+    <xacro:motor name="right_wheel_3"/>
+    <xacro:motor name="right_wheel_4"/> 
+
+
+</robot>

@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/ccwss/PersonalData/Program/Ros/car5_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/ccwss/PersonalData/Program/Ros/car5_ws/src/keyboard_ros/include/**",
+        "/home/ccwss/PersonalData/Program/Ros/car5_ws/src/robot/robot1_program/include/**",
+        "/home/ccwss/PersonalData/Program/Ros/car5_ws/src/robot/robot1_gazebo/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

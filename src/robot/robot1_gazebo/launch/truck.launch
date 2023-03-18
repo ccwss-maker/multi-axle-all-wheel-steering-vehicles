@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find robot1_gazebo)/launch/car.launch">
+    <arg name="world_name" value="track"/>
+    <arg name="x" value="101.25" />
+    <arg name="y" value="0" />
+    <arg name="z" value="0.9" />
+    <arg name="R" value="0" />
+    <arg name="P" value="0" />
+    <arg name="Y" value="1.52" />
+    <arg name="use_sim_time" value="false"/>
+  </include>
+
+  <!-- <node pkg="robot1" type="robot" name="robot1" /> -->
+</launch>

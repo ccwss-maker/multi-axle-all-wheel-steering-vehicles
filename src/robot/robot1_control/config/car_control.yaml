@@ -1,0 +1,105 @@
+car:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+  
+  # #Effort Controllers ---------------------------------------
+  # left_rear_joint_effort_controller:
+  #   type: effort_controllers/JointEffortController
+  #   joint: left_rear_joint
+
+  # right_rear_joint_effort_controller:
+  #   type: effort_controllers/JointEffortController
+  #   joint: right_rear_joint
+
+  # left_front_joint_effort_controller:
+  #   type: effort_controllers/JointEffortController
+  #   joint: left_front_joint
+
+  # right_front_joint_effort_controller:
+  #   type: effort_controllers/JointEffortController
+  #   joint: right_front_joint
+
+  # #Velocity Controllers ---------------------------------------
+  left_wheel_1_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: left_wheel_1_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  left_wheel_2_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: left_wheel_2_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  left_wheel_3_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: left_wheel_3_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  left_wheel_4_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: left_wheel_4_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  right_wheel_1_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: right_wheel_1_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  right_wheel_2_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: right_wheel_2_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  right_wheel_3_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: right_wheel_3_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  right_wheel_4_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: right_wheel_4_joint
+    pid: {p: 1500, i: 5.5, d: 4.0}
+
+  #Position Controllers ---------------------------------------
+  left_string_1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left_string_1_joint
+    pid: {p: 6000, i: 400, d: 80}
+
+  left_string_2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left_string_2_joint
+    pid: {p: 6000, i: 400, d: 80}
+
+  left_string_3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left_string_3_joint
+    pid: {p: 6000, i: 400, d: 80}
+
+  left_string_4_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: left_string_4_joint
+    pid: {p: 6000, i: 400, d: 80}
+
+  right_string_1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right_string_1_joint
+    pid: {p: 6000, i: 400, d: 80}
+
+  right_string_2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right_string_2_joint
+    pid: {p: 6000, i: 400, d: 80}
+
+  right_string_3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right_string_3_joint
+    pid: {p: 6000, i: 400, d: 80}
+
+  right_string_4_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: right_string_4_joint
+    pid: {p: 6000, i: 400, d: 80}
+
