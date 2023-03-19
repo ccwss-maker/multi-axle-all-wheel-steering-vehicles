@@ -7,7 +7,7 @@
     <arg name="z" value="0.9" />
     <arg name="R" value="0" />
     <arg name="P" value="0" />
-    <arg name="Y" value="1.52" />
+    <arg name="Y" value="-1.52" />
     <arg name="use_sim_time" value="false"/>
   </include>
 

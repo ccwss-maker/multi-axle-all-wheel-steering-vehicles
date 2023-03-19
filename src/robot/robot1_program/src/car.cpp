@@ -6,10 +6,14 @@ using namespace sensor_msgs;
 
 string config_yaml = "/home/ccwss/PersonalData/Program/Ros/car5_ws/src/robot/robot1_program/config/size.yaml";
 
+struct timeval tv;
+
 car_ctrl_ car_ctrl;
 car_info_ car_info;
 img_data_ center_line_of_road;
 img_data_ center_of_steering;
+ofstream txt_out;
+
 ros::Publisher left_wheel_pub[4];
 ros::Publisher right_wheel_pub[4];
 ros::Publisher left_string_pub[4];
@@ -124,8 +128,9 @@ static void Img_Mouse_Callback(int event, int x, int y, int flags, void* param)
         }
         case cv::EVENT_LBUTTONDOWN:
         {
-            img_data->u0_x += (img_data->Mat.cols / 2 - x);
-            img_data->u0_y += (img_data->Mat.rows / 2 - y);
+            cv::imwrite("/home/ccwss/PersonalData/Program/Ros/car5_ws/0.jpg", img_data->Mat);
+            // img_data->u0_x += (img_data->Mat.cols / 2 - x);
+            // img_data->u0_y += (img_data->Mat.rows / 2 - y);
             break;
         }
         case cv::EVENT_RBUTTONDOWN:
@@ -166,6 +171,7 @@ void body_init()
 
 void laser_callback(const sensor_msgs::LaserScanConstPtr& laser1, const sensor_msgs::LaserScanConstPtr & laser2,const sensor_msgs::LaserScanConstPtr & laser3 ,const sensor_msgs::LaserScanConstPtr & laser4)
 { 
+    gettimeofday(&tv,NULL);
     static int init_sign=0;
     if(init_sign==0)
     {
@@ -191,10 +197,10 @@ void laser_callback(const sensor_msgs::LaserScanConstPtr& laser1, const sensor_m
         init_sign=1;
     }
 
-    float d1 = laser4->ranges[0]-0.005;
-    float d4 = laser1->ranges[0]-0.005;
-    float d2 = laser3->ranges[0]-0.005;
-    float d3 = laser2->ranges[0]-0.005;
+    float d1 = laser4->ranges[0]-0.01;
+    float d4 = laser1->ranges[0]-0.01;
+    float d2 = laser3->ranges[0]-0.01;
+    float d3 = laser2->ranges[0]-0.01;
     car_ctrl_ auto_ctrl = cat_auto_ctrl(d1,d4,d2,d3);
 
     /*画车身*/
@@ -210,19 +216,20 @@ void laser_callback(const sensor_msgs::LaserScanConstPtr& laser1, const sensor_m
     cv::line(center_of_steering.Mat,car_info.body_car_uv[2],car_info.body_car_uv[3],cv::Scalar(0,255,0),2,cv::LINE_AA);
     cv::line(center_of_steering.Mat,car_info.body_car_uv[3],car_info.body_car_uv[0],cv::Scalar(0,255,0),2,cv::LINE_AA);
     /*画转向中心*/
-    for(int i = 0;i<2;i++)
+    for(int i=0 ; i<2 ; i++)
     {
-        for(int j=0;j<4;j++)
+        for(int j=0 ; j<4 ; j++)
         {
             double k;
             if(i == 0)  k= -1.0 /tan(auto_ctrl.pub_left_string[j].data);
             else        k= -1.0 /tan(auto_ctrl.pub_right_string[j].data);
             double x0=car_info.body_wheel[i][j].point.x;
             double y0=car_info.body_wheel[i][j].point.y;
+            cout<<i<<','<<j<<','<<k<<','<<y0-k*x0<<endl;
             car_info.body_wheel[i][j].point_boundary[0].x = -(double)center_of_steering.obj_width / 2 / center_of_steering.Mat_scaling;
             car_info.body_wheel[i][j].point_boundary[1].x = (double)center_of_steering.obj_width / 2 / center_of_steering.Mat_scaling;
-            car_info.body_wheel[i][j].point_boundary[0].y = 1.0*k*(car_info.body_wheel[i][j].point_boundary[0].x-x0)+y0;
-            car_info.body_wheel[i][j].point_boundary[1].y = 1.0*k*(car_info.body_wheel[i][j].point_boundary[1].x-x0)+y0;
+            car_info.body_wheel[i][j].point_boundary[0].y = k*(car_info.body_wheel[i][j].point_boundary[0].x-x0)+y0;
+            car_info.body_wheel[i][j].point_boundary[1].y = k*(car_info.body_wheel[i][j].point_boundary[1].x-x0)+y0;
 
             cv::Scalar color;
             if(i == 0)  color = cv::Scalar(255,0,0);
@@ -234,7 +241,7 @@ void laser_callback(const sensor_msgs::LaserScanConstPtr& laser1, const sensor_m
             cv::circle(center_of_steering.Mat,car_info.body_wheel_uv[i][j].point,5,cv::Scalar(0,0,0),-1);
         }
     }
-
+    cout<<endl;
     /*画道路中心线*/
     center_line_of_road.Mat = cv::Scalar(255,255,255);
     center_line_of_road.u_x = (double)center_line_of_road.Mat.cols / center_line_of_road.obj_width * center_line_of_road.Mat_scaling;
@@ -275,6 +282,8 @@ int main(int argc, char **argv)
 {
     car_info.length = 4;
     car_info.width = 2;
+    car_info.laser_length = 3.98;
+    car_info.laser_width = 1;
     car_info.wheel_x[0] = 1.6;
     car_info.wheel_x[1] = 0.6;
     car_info.wheel_x[2] = -0.6;
@@ -285,6 +294,7 @@ int main(int argc, char **argv)
     car_info.k_a = 2;
     car_info.k_h = 1;
 
+    txt_out.open("/home/ccwss/PersonalData/Program/Ros/car5_ws/data.txt", std::ios::out | std::ios::app);
     //Initiate ROS
     ros::init(argc, argv, "subscribe_and_publish", ros::init_options::NoSigintHandler);
 
@@ -300,42 +310,33 @@ car_ctrl_ cat_auto_ctrl(float d1,float d4,float d2,float d3)
 {
     car_ctrl_ car_ctrl_auto;
     double L1;
-    double angle_a = atan((d2-d1)/car_info.length);
-    if(angle_a>0)   L1 = (d4-d2)/(d2-d1)*car_info.length;
-    else            L1 = (d1-d3)/(d3-d4)*car_info.length;
+    double angle_a = atan((double)(d2-d1)/car_info.laser_length);
+    if(angle_a>0)   L1 = (d4-d2)/(d2-d1)*car_info.laser_length;
+    else            L1 = (d1-d3)/(d3-d4)*car_info.laser_length;
     double L2 = L1/2;
-
+    double H = L2*sin(angle_a);
+    car_info.L2 = L2;
+    car_info.H = H;
+    cout<<angle_a<<','<<car_info.H<<endl;
     YAML::Node point_node = YAML::LoadFile(config_yaml);
     car_info.k_a = point_node["k_a"].as<std::double_t>();
     car_info.k_h = point_node["k_h"].as<std::double_t>();
-    static int a=100;
-    double Vv ;
-    if(a>0)
-    {
-        a--;
-        car_info.k_v = 0;
-    }
-    else
-    {
-        car_info.k_v = point_node["k_v"].as<std::double_t>();
-    }
+    car_info.k_v = point_node["k_v"].as<std::double_t>();
 
-    double V = 1;
-    
     for(int i = 0 ; i < 4 ; i++)
     {
         double X_wi = car_info.wheel_x[i];
-        double angle_b = atan(car_info.width/2/(X_wi+L2));
+        double angle_b = atan(car_info.laser_width/(2*(X_wi+L2)));
 
-        double H_LR = -car_info.k_a*angle_a*car_info.width/2/car_info.k_v/tan(angle_b) - sin(angle_a) - car_info.k_h*L2*sin(2*angle_a)/2/car_info.k_v;
-        double V_R = -car_info.k_a*angle_a*car_info.width/2/car_info.k_v + cos(angle_a) - car_info.k_h*L2*pow(sin(angle_a),2)/car_info.k_v;
-        double V_L = car_info.k_a*angle_a*car_info.width/2/car_info.k_v + cos(angle_a) - car_info.k_h*L2*pow(sin(angle_a),2)/car_info.k_v;;
+        double H_LR = -car_info.k_a*angle_a*car_info.laser_width/(2*tan(angle_b)) - car_info.k_v*sin(angle_a) - car_info.k_h*H*cos(angle_a);
+        double V_R = -car_info.k_a*angle_a*car_info.laser_width/2 + car_info.k_v*cos(angle_a) - car_info.k_h*H*sin(angle_a);
+        double V_L = car_info.k_a*angle_a*car_info.laser_width/2 + car_info.k_v*cos(angle_a) - car_info.k_h*H*sin(angle_a);
 
         car_ctrl_auto.pub_right_string[i].data = atan(H_LR / V_R);
         car_ctrl_auto.pub_left_string[i].data = atan(H_LR / V_L);
         
-        car_ctrl_auto.pub_right_wheel[i].data = car_info.k_v * pow(pow(V_R,2)+pow(H_LR,2),0.5);
-        car_ctrl_auto.pub_left_wheel[i].data = car_info.k_v * pow(pow(V_L,2)+pow(H_LR,2),0.5);
+        car_ctrl_auto.pub_right_wheel[i].data = car_info.k_v/fabs(car_info.k_v)*pow(pow(V_R,2)+pow(H_LR,2),0.5);
+        car_ctrl_auto.pub_left_wheel[i].data = car_info.k_v/fabs(car_info.k_v)*pow(pow(V_L,2)+pow(H_LR,2),0.5);
     }
 
     for(int i=0;i<4;i++)
@@ -350,6 +351,7 @@ car_ctrl_ cat_auto_ctrl(float d1,float d4,float d2,float d3)
     a_deviation.data = angle_a*180/PI;
     dl_deviation.data = d1;
     dr_deviation.data = d4;
+    txt_out<<tv.tv_sec*1000+tv.tv_usec/1000<<','<<a_deviation.data<<','<<H_deviation.data<<','<<dl_deviation.data<<','<<dr_deviation.data<<"\n";
 
     H_deviation_pub.publish(H_deviation);
     a_deviation_pub.publish(a_deviation);

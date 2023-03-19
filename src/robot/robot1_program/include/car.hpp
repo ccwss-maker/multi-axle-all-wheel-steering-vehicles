@@ -5,9 +5,11 @@
 #include "string.h"  
 #include "sstream"
 #include "termio.h"
-#include <iostream>
-#include <vector>
-#include <csignal>
+#include "iostream"
+#include "fstream"
+#include "vector"
+#include "csignal"
+#include "sys/time.h"
 #include "ros/ros.h"  
 #include "std_msgs/String.h"
 #include "std_msgs/Float64.h"
@@ -16,15 +18,15 @@
 #include "gazebo_msgs/ModelStates.h"
 #include "boost/thread.hpp"
 #include "cmath"
-#include <algorithm> 
-#include <yaml-cpp/yaml.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/synchronizer.h>
-#include <message_filters/time_synchronizer.h>
-#include <message_filters/sync_policies/exact_time.h>
-#include <message_filters/sync_policies/approximate_time.h>
-#include  "opencv2/opencv.hpp"
-#include  "opencv2/highgui.hpp"
+#include "algorithm" 
+#include "yaml-cpp/yaml.h"
+#include "message_filters/subscriber.h"
+#include "message_filters/synchronizer.h"
+#include "message_filters/time_synchronizer.h"
+#include "message_filters/sync_policies/exact_time.h"
+#include "message_filters/sync_policies/approximate_time.h"
+#include "opencv2/opencv.hpp"
+#include "opencv2/highgui.hpp"
 
 using namespace ros;
 using namespace std;
@@ -48,9 +50,14 @@ typedef struct
 typedef struct 
 {
     double length;
-    double width;    
+    double width;  
+    double laser_length;
+    double laser_width;     
     double wheel_y[2];
     double wheel_x[4];
+
+    double H;
+    double L2;
     double k_v;
     double k_h;
     double k_a;
