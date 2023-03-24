@@ -6,6 +6,7 @@ using namespace sensor_msgs;
 
 string config_yaml_path = "/home/ccwss/PersonalData/Program/Ros/car5_ws/src/robot/robot1_program/config/size.yaml";
 string output_data_path = "/home/ccwss/PersonalData/Program/Ros/car5_ws/output_data.txt";
+string output_img_path = "/home/ccwss/PersonalData/Program/Ros/car5_ws/0.jpg";
 
 struct timeval tv;
 car_ctrl_ car_ctrl;
@@ -129,7 +130,7 @@ static void Img_Mouse_Callback(int event, int x, int y, int flags, void* param)
         }
         case cv::EVENT_LBUTTONDOWN:
         {
-            cv::imwrite("/home/ccwss/PersonalData/Program/Ros/car5_ws/0.jpg", img_data->Mat);
+            cv::imwrite(output_img_path, img_data->Mat);
             // img_data->u0_x += (img_data->Mat.cols / 2 - x);
             // img_data->u0_y += (img_data->Mat.rows / 2 - y);
             break;
