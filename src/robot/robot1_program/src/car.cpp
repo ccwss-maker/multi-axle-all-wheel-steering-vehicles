@@ -4,11 +4,12 @@ using namespace ros;
 using namespace std;
 using namespace sensor_msgs;
 
-string config_yaml = "/home/ccwss/PersonalData/Program/Ros/car5_ws/src/robot/robot1_program/config/size.yaml";
+string config_yaml_path = "/home/ccwss/PersonalData/Program/Ros/car5_ws/src/robot/robot1_program/config/size.yaml";
+string output_data_path = "/home/ccwss/PersonalData/Program/Ros/car5_ws/output_data.txt";
 
 struct timeval tv;
-
 car_ctrl_ car_ctrl;
+
 car_info_ car_info;
 img_data_ center_line_of_road;
 img_data_ center_of_steering;
@@ -294,7 +295,7 @@ int main(int argc, char **argv)
     car_info.k_a = 2;
     car_info.k_h = 1;
 
-    txt_out.open("/home/ccwss/PersonalData/Program/Ros/car5_ws/data.txt", std::ios::out | std::ios::app);
+    txt_out.open(output_data_path, std::ios::out | std::ios::app);
     //Initiate ROS
     ros::init(argc, argv, "subscribe_and_publish", ros::init_options::NoSigintHandler);
 
@@ -318,7 +319,7 @@ car_ctrl_ cat_auto_ctrl(float d1,float d4,float d2,float d3)
     car_info.L2 = L2;
     car_info.H = H;
     cout<<angle_a<<','<<car_info.H<<endl;
-    YAML::Node point_node = YAML::LoadFile(config_yaml);
+    YAML::Node point_node = YAML::LoadFile(config_yaml_path);
     car_info.k_a = point_node["k_a"].as<std::double_t>();
     car_info.k_h = point_node["k_h"].as<std::double_t>();
     car_info.k_v = point_node["k_v"].as<std::double_t>();
