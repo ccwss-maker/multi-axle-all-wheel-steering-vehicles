@@ -26,7 +26,7 @@ catkin_make
 5.Add setup.bash to .bashrc,
 
 sudo gedit ~/.bashrc
-![图片](https://user-images.githubusercontent.com/75433402/227506900-c531cadc-f064-4ad8-baaf-ee9697dd195b.png)
+![图片](https://user-images.githubusercontent.com/75433402/227512382-6a4eb7d7-f29f-44dd-8926-328b8df1b1fb.png)
 Add source absolute_path/catkin_ws/devel/setup.bash to the last line,
 ![图片](https://user-images.githubusercontent.com/75433402/227507220-9d446103-9f83-4040-a7ed-9dff785becea.png)
 Then, Execute the following command, source ~/.bashrc,
@@ -46,7 +46,7 @@ You will see nothing happen because Gazebo is paused,you can turn it on in the l
 ![图片](https://user-images.githubusercontent.com/75433402/227509522-120f9dcf-8cbe-4f59-8a5c-6738e8bf002c.png)
 You will see two windows showing the wheelset steering center and the body geometry center trajectory respectively.
 ![图片](https://user-images.githubusercontent.com/75433402/227509673-dd4c0671-63e6-4b95-8c77-aa9896571004.png)
-You can use the mouse to manipulate the image, scroll the wheel to zoom in and out, press the wheel to restore the initial scale and center the image, right click and drag to move the image position, left click to save the image to output_data_path.
+You can use the mouse to manipulate the image, scroll the wheel to zoom in and out, press the wheel to restore the initial scale and center the image, right click and drag to move the image position, left click to save the image to output_img_path.
 
 8.The file in the following path can be adjusted for each direction of the deflection speed scale factor, src/robot/robot1_program/config/size.yaml,
 ![图片](https://user-images.githubusercontent.com/75433402/227511128-01ddac68-89c3-4f79-88d4-73fd878ff41d.png)
